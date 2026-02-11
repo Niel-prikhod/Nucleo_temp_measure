@@ -70,7 +70,10 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+	char uart_buf[50];
+	int adc_val;
+	float voltage;
+	int len;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -101,9 +104,29 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
+	  // 1. Start the ADC Reading
+	    HAL_ADC_Start(&hadc1);
+
+	    // 2. Wait for it to finish (timeout 10ms)
+	    if (HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK)
+	    {
+	        // 3. Get the raw value (0 to 4095)
+	        adc_val = HAL_ADC_GetValue(&hadc1);
+
+	        // 4. Convert to Voltage (3.3V reference, 12-bit res = 4096 steps)
+	        // formula: Voltage = (ADC_Value / 4096) * 3.3
+	        voltage = (adc_val / 4096.0) * 3.3;
+
+	        // Format the string
+	        len = sprintf(uart_buf, "Raw: %d | Volt: %.2f V\r\n", adc_val, voltage);
+
+	        // 5. Send to Laptop via UART (Serial)
+	        HAL_UART_Transmit(&huart2, (uint8_t*)uart_buf, len, 100);
+	    }
+	  /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	    HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }
