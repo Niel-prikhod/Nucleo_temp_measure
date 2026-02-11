@@ -1,0 +1,19 @@
+# Binary directories
+Debug/
+Release/
+build/
+
+# PC specific files
+.metadata/
+.recommenders/
+*.launch
+
+# Common temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# OS specific
+.DS_Store
+Thumbs.db
