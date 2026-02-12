@@ -17,3 +17,8 @@ build/
 # OS specific
 .DS_Store
 Thumbs.db
+
+.mxproject
+.project
+.cproject
+.settings/

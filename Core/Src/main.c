@@ -123,7 +123,7 @@ int main(void)
 	        // 5. Send to Laptop via UART (Serial)
 	        HAL_UART_Transmit(&huart2, (uint8_t*)uart_buf, len, 100);
 	    }
-	  /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 	    HAL_Delay(500);
@@ -316,8 +316,6 @@ void Error_Handler(void)
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
