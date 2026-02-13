@@ -37,3 +37,6 @@ debug:
 
 server:
 	openocd -f $(OPENOCD_INTERFACE) -f $(OPENOCD_TARGET)
+
+watch:
+	minicom -D /dev/ttyACM0 230400
