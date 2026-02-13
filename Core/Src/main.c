@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "data_acq.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -75,10 +75,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	char uart_buf[50];
-	int adc_val;
-	float voltage;
-	int len;
+	// char uart_buf[50];
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -104,36 +101,16 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-
+	Sensor_Start();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  // 1. Start the ADC Reading
-	    HAL_ADC_Start(&hadc1);
-
-	    // 2. Wait for it to finish (timeout 10ms)
-	    if (HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK)
-	    {
-	        // 3. Get the raw value (0 to 4095)
-	        adc_val = HAL_ADC_GetValue(&hadc1);
-
-	        // 4. Convert to Voltage (3.3V reference, 12-bit res = 4096 steps)
-	        // formula: Voltage = (ADC_Value / 4096) * 3.3
-	        voltage = (adc_val / 4096.0) * 3.3;
-
-	        // Format the string
-	        len = sprintf(uart_buf, "Raw: %d | Volt: %.2f V\r\n", adc_val, voltage);
-
-	        // 5. Send to Laptop via UART (Serial)
-	        HAL_UART_Transmit(&huart2, (uint8_t*)uart_buf, len, 100);
-	    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	    HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }
@@ -209,7 +186,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T2_TRGO;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1.Init.NbrOfConversion = 1;
-  hadc1.Init.DMAContinuousRequests = DISABLE;
+  hadc1.Init.DMAContinuousRequests = ENABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
@@ -250,9 +227,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 15-1;
+  htim2.Init.Prescaler = 14;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 5000-1;
+  htim2.Init.Period = 4999;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -292,7 +269,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 230400;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
