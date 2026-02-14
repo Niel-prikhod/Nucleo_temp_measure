@@ -75,7 +75,6 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	// char uart_buf[50];
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
