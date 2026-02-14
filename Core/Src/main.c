@@ -108,7 +108,10 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+		if (sensor_new_data_flag) {
+			sensor_new_data_flag = 0;
+			send_voltage(&huart2, adc_raw_buffer);
+		}
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
