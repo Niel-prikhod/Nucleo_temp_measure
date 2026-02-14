@@ -19,16 +19,18 @@ int	ser_printf(UART_HandleTypeDef *huart, char *format, ...) {
 }
 
 int send_voltage(UART_HandleTypeDef *huart, volatile uint16_t *adc_raw_buffer) {
-	uint32_t	current_time;
-	uint16_t	raw;
-	float		voltage;
+	signal_t	signal;
 	int			len;
+	float		logR;
 
-	current_time = HAL_GetTick();
-	raw = adc_raw_buffer[0];
-	voltage = (raw / 4095.0f) * 3.3f;
-	len = ser_printf(huart, "%lu, %u, %.2f, 0, 0, 0\r\n", 
-	   current_time, raw, voltage);
+	signal.current_time = HAL_GetTick();
+	signal.raw = adc_raw_buffer[0];
+	signal.voltage = (signal.raw / 4095.0f) * V_REF;
+	signal.resistance = signal.voltage * RESISTOR / (V_REF - signal.voltage);
+	logR = logf(signal.resistance);
+	signal.temperature = (1.0 / (SH_EQ_C1 + SH_EQ_C2 * logR + SH_EQ_C3 * logR * logR * logR)) - ABS_ZERO;
+	len = ser_printf(huart, "%lu, %u, %.2f, %.2f, %.2f, 0\r\n", 
+	   signal.current_time, signal.raw, signal.voltage, signal.resistance, signal.temperature);
 	return len;
 }
 

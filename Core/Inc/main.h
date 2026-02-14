@@ -33,6 +33,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 # include <stdio.h>
 # include <stdarg.h>
+# include <math.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -54,9 +55,6 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-// utils.c
-int	ser_printf(UART_HandleTypeDef *huart, char *format, ...);
-int send_voltage(UART_HandleTypeDef *huart, volatile uint16_t *adc_raw_buffer);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -64,6 +62,25 @@ int send_voltage(UART_HandleTypeDef *huart, volatile uint16_t *adc_raw_buffer);
 #define USER_LED_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
+# define V_REF 3.3f
+# define RESISTOR 10000
+# define SH_EQ_C1 0.001129148
+# define SH_EQ_C2 0.000234125
+# define SH_EQ_C3 0.0000000876741
+# define ABS_ZERO 273.15
+
+typedef	struct	signal_s {
+	uint32_t	current_time;
+	uint16_t	raw;
+	float		voltage;
+	float		resistance;
+	float		temperature;
+}	signal_t;
+
+//
+// utils.c
+int	ser_printf(UART_HandleTypeDef *huart, char *format, ...);
+int send_voltage(UART_HandleTypeDef *huart, volatile uint16_t *adc_raw_buffer);
 
 /* USER CODE END Private defines */
 
