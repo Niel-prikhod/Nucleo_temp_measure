@@ -32,6 +32,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 # include <stdio.h>
+# include <stdarg.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -53,7 +54,9 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+// utils.c
+int	ser_printf(UART_HandleTypeDef *huart, char *format, ...);
+int send_voltage(UART_HandleTypeDef *huart, volatile uint16_t *adc_raw_buffer);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
