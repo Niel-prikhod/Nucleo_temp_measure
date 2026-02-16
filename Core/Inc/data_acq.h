@@ -3,14 +3,22 @@
 
 # include "main.h"
 
-// --- Configuration ---
-#define SENSOR_BUFFER_SIZE  1   // We only need 1 sample per interrupt for now
+#define SENSOR_BUFFER_SIZE  1 
 
-// --- Public Variables ---
-extern volatile uint16_t adc_raw_buffer[SENSOR_BUFFER_SIZE];
-extern volatile uint8_t  sensor_new_data_flag;
+extern volatile uint16_t	g_adc_data[SENSOR_BUFFER_SIZE];
+extern volatile bool		g_sensor_data_flag;
 
-// data_acq.c
-void Sensor_Start(void);  // Kicks off the Timer and DMA
+/*
+*  Starts the ADC in DMA mode first, then start the timer 
+*/
+void Sensor_Start(void);  
+
+/*
+*		--- Interrupt Callback ---
+*	Override of the HAL library's function.
+*	It calls this function automatically when DMA finishes.
+*	Add visual effect - toggle LED every 200 ticks
+*/
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
 
 #endif
