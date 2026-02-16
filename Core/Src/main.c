@@ -22,6 +22,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "data_acq.h"
+#include "utils.h"
+#include "sig_proc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -114,7 +116,7 @@ int main(void)
 		if (g_sensor_data_flag) {
 			g_sensor_data_flag = 0;
 			signal.raw = *g_adc_data;
-			EMA_update(&filter, signal.raw);
+			signal.raw_filtered = EMA_update(&filter, signal.raw);
 			Calc_Physics(&signal);
 			send_csv(&huart2, signal);
 		}

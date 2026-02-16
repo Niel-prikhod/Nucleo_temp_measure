@@ -31,10 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-# include <stdio.h>
 # include <stdarg.h>
-# include <math.h>
-# include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -63,72 +60,7 @@ void Error_Handler(void);
 #define USER_LED_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
-#define EMA_ALPHA 0.1
-#define V_REF 3.3f
-#define RESISTOR 10000
-#define SH_EQ_C1 0.001129148
-#define SH_EQ_C2 0.000234125
-#define SH_EQ_C3 0.0000000876741
-#define ABS_ZERO 273.15
-
-/*
- *	Store signal data that are used to get temperature from thermistor
- */
-typedef	struct {
-	uint32_t	current_time;
-	uint16_t	raw;
-	uint16_t	raw_filtered;
-	float		voltage;
-	float		resistance;
-	float		temperature;
-}	signal_t;
-
-/*
- *	Used to store current average value for EMA (Exponential Moving Average)
- *	filtration.
- */
-typedef struct {
-	float	ema_cur;
-	float	alpha;
-	bool	initialized;
-}	ema_t;
-
-// utils.c
-/* 
-* Custom printf wrapper for UART communication
-* relies on internal buffer (char[128])
-*/
-int		ser_printf(UART_HandleTypeDef *huart, char *format, ...);
-
-/*
-* Sends thermistor's data in CSV format via UART:
-* time_ms, adc_raw, adc_raw_filtered, voltage_V, resistance_Ohm, temperature_C 
-*/
-int		send_csv(UART_HandleTypeDef *huart, signal_t signal);
-
-// sig_proc.c
-/**
- * Initialize fields of `filter`. Set initialization flag to 0 for first time
- * usage
- */
-void	EMA_init(ema_t *filter, float alpha);
-
-/*
- *	Applies Exponential Moving Average filter defined by `filter` to `raw` 
- *	value. Stores new current average value to `filter->ema_cur` and return it.
- *
- *	In case of "unitialized" filter, set initialization flag and return raw.
- */
-float	EMA_update(ema_t *filter, uint16_t raw);
-
-/* 
-* Fills signal_t structure.
-* Calculates:
-*	- voltage[V] from `signal->raw_filtered` value;
-*	- resistance[\Omega], using voltage divider equation; 
-*	- temperature[\degC], using Reinhart-Hart equation, constants are define by SH_EQ_C1-3
-*/
-void	Calc_Physics(signal_t *signal);
+#define EMA_ALPHA 0.1f
 
 /* USER CODE END Private defines */
 

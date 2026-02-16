@@ -1,5 +1,4 @@
-#include "main.h"
-
+#include "sig_proc.h"
 
 void	EMA_init(ema_t	*filter, float alpha) {
 	filter->ema_cur = 0.0f; 
@@ -11,7 +10,7 @@ float	EMA_update(ema_t *filter, uint16_t raw) {
 	if (!filter)
 		return 0;
 	if (!filter->initialized) {
-		filter->ema_cur = raw;
+		filter->ema_cur = (float)raw;
 		filter->initialized = 1;
 	}
 	else {

@@ -2,6 +2,7 @@
 # define INC_DATA_ACQ_H_
 
 # include "main.h"
+# include <stdbool.h>
 
 #define SENSOR_BUFFER_SIZE  1 
 
@@ -19,6 +20,6 @@ void Sensor_Start(void);
 *	It calls this function automatically when DMA finishes.
 *	Add visual effect - toggle LED every 200 ticks
 */
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
+// void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
 
 #endif

@@ -26,7 +26,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
 
     if (hadc->Instance == ADC1) {
         g_sensor_data_flag = 1;
-        counter = 0;
         counter++;
         if (counter >= 200) {
             HAL_GPIO_TogglePin(USER_LED_GPIO_Port, USER_LED_Pin);

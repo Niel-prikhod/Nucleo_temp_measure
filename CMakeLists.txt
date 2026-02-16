@@ -47,6 +47,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
 	Core/Src/data_acq.c
 	Core/Src/utils.c
+	Core/Src/sig_proc.c
 )
 
 # Add include paths
