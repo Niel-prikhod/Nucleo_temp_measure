@@ -50,6 +50,7 @@ The `Makefile` includes several utility targets for development:
 
 ## Project Structure
 
+```
 Core/
 ├── Inc/
 │   ├── data_acq.h    # Data acquisition (ADC+DMA)
@@ -61,6 +62,7 @@ Core/
     ├── utils.c       # ser_printf, send_csv
     ├── sig_proc.c    # EMA filter, Calc_Physics
     └── main.c
+```
 
 ## Algorithm & Mathematics
 
