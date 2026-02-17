@@ -2,7 +2,13 @@
 
 ## Description
 
-This project implements a real-time data acquisition system for the STM32F446RE Nucleo-64 board. It utilizes hardware-timed ADC sampling triggered by TIM2 and transfers data via DMA to minimize CPU load.
+This project implements a real-time temperature monitoring system for the STM32F446RE Nucleo-64 board using the **KY-013 analog NTC thermistor sensor**. 
+The data acquisition pipeline utilizes hardware-timed ADC sampling triggered by TIM2, transfers data via DMA for zero-CPU overhead, applies an **Exponential Moving Average (EMA)** filter to reduce noise, and converts readings to temperature using the **Steinhart-Hart equation**. Processed data is transmitted via UART in CSV format for real-time monitoring.
+**Key Features:**
+- Hardware-timed ADC sampling at 200 Hz
+- EMA digital noise filtering
+- Steinhart-Hart temperature calibration
+- CSV telemetry output over UART
 
 ## Prerequisites
 
@@ -42,6 +48,20 @@ The `Makefile` includes several utility targets for development:
 * **`make fclean`**: Completely removes the build directory.
 * **`make re`**: Performs a full re-build (equivalent to `fclean` followed by `make`).
 
+## Project Structure
+
+Core/
+├── Inc/
+│   ├── data_acq.h    # Data acquisition (ADC+DMA)
+│   ├── utils.h       # UART utilities
+│   ├── sig_proc.h    # Signal processing (EMA + physics)
+│   └── main.h
+└── Src/
+    ├── data_acq.c    # Sensor start, DMA callbacks
+    ├── utils.c       # ser_printf, send_csv
+    ├── sig_proc.c    # EMA filter, Calc_Physics
+    └── main.c
+
 ## Algorithm & Mathematics
 
 ### 1. Hardware-Timed Sampling & Frequency
@@ -67,22 +87,72 @@ The data acquisition pipeline is designed for **zero-CPU overhead** during the s
 4.  **Interrupt:** Only after the DMA fills the buffer (Circular Mode), the `DMA_IT_TC` (Transfer Complete) interrupt fires, calling `HAL_ADC_ConvCpltCallback`.
 5.  **Processing:** The CPU wakes up only to set the `sensor_new_data_flag`, allowing the main loop to process/send the data.
 
-### 3. Voltage Calculation
+### 3. Unit Conversions
+#### Voltage Calculation
 The ADC operates in **12-bit resolution** mode with a reference voltage ($V_{REF}$) of **3.3V**. The raw digital value ($D_{raw}$) is converted to analog voltage ($V_{in}$) using the following equation:
 
 $$V_{in} = D_{raw} \times \frac{V_{REF}}{2^{12} - 1}$$
 
 $$V_{in} = D_{raw} \times \frac{3.3}{4095}$$
 
+#### Therimstor Resistance
+Using a **10 kΩ** voltage divider resistor ($R_{div}$):
+
+$$R_{therm} = V_{in} \times \frac{R_{div}}{V_{REF} - V_{in}}$$
+
+#### Temperature (Steinhart-Hart Equation)
+The NTC thermistor temperature is calculated using the Steinhart-Hart equation with calibrated coefficients:
+
+$$\frac{1}{T} = C_1 + C_2 \ln(R) + C_3 [\ln(R)]^3$$
+
+Where:
+- $C_1 = 0.001129148$
+- $C_2 = 0.000234125$
+- $C_3 = 0.0000000876741$
+- $T$ is in **Kelvin**
+Final temperature in **Celsius**:
+$$T_{°C} = T_K - 273.15$$
+
+### 4. Exponential Moving Average Filter
+To reduce noise from the high-speed 200 Hz sampling, an **Exponential Moving Average (EMA)** filter is applied to the raw ADC data.
+#### Algorithm
+
+$$EMA_n = \alpha \times x_n + (1 - \alpha) \times EMA_{n-1}$$
+
+Where:
+- $x_n$ = current raw ADC sample
+- $EMA_{n-1}$ = previous filtered value
+- $\alpha$ = smoothing factor (currently **0.01**)
+
+#### Implementation
+The filter maintains state in an `ema_t` structure:
+- `ema_cur`: Current filtered value
+- `alpha`: Smoothing factor (0.01)
+- `initialized`: First-run flag (initializes with first sample)
+The filter initializes on first call to avoid startup transients, then applies the exponential smoothing formula.
+
+## Data Output Format
+
+The system transmits sensor data via UART in **CSV format**:
+time_ms, adc_raw, adc_raw_filtered, voltage_V, resistance_Ohm, temperature_C
+| Field | Description | Units |
+| :--- | :--- | :--- |
+| `time_ms` | System tick time | milliseconds |
+| `adc_raw` | Raw 12-bit ADC value | - |
+| `adc_raw_filtered` | EMA-filtered ADC value | - |
+| `voltage` | Calculated voltage | Volts |
+| `resistance` | Thermistor resistance | Ohms |
+| `temperature` | Final temperature | Celsius |
+
 ## Roadmap
 
 Features planned for implementation:
 
 ### Unit Conversion
-* **Data Calibration**: Implement Steinhart-Hart equations to convert raw 12-bit ADC voltage values into precise temperature readings in Celsius and Fahrenheit.
+- [x] **Data Calibration**: Implement Steinhart-Hart equations to convert raw 12-bit ADC voltage values into precise temperature readings in Celsius and Fahrenheit.
 
 ### Signal Processing
-* **Digital Filtering**: Integrate an Exponentially Weighted Moving Average (EWMA) within the `data_acq.c` module to reduce signal noise from the high-speed sampling.
+- [x] **Digital Filtering**: Integrate an Exponentially Weighted Moving Average (EWMA) within the `data_acq.c` module to reduce signal noise from the high-speed sampling.
 
 ### Dynamic Analysis
-* **Real-time Monitoring**: Implement dynamic analysis of the incoming data stream to track temperature trends and sensor stability during operation.
+- [ ] **Real-time Monitoring**: Implement dynamic analysis of the incoming data stream to track temperature trends and sensor stability during operation.

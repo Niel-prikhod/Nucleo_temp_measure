@@ -22,6 +22,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "data_acq.h"
+#include "utils.h"
+#include "sig_proc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -75,6 +77,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+	ema_t		filter;
+	signal_t	signal;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -100,6 +104,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+	EMA_init(&filter, EMA_ALPHA);
 	Sensor_Start();
   /* USER CODE END 2 */
 
@@ -108,9 +113,12 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-		if (sensor_new_data_flag) {
-			sensor_new_data_flag = 0;
-			send_voltage(&huart2, adc_raw_buffer);
+		if (g_sensor_data_flag) {
+			g_sensor_data_flag = 0;
+			signal.raw = *g_adc_data;
+			signal.raw_filtered = EMA_update(&filter, signal.raw);
+			Calc_Physics(&signal);
+			send_csv(&huart2, signal);
 		}
     /* USER CODE BEGIN 3 */
   }

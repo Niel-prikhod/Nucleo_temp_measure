@@ -1,9 +1,5 @@
-#include "main.h"
+#include "utils.h"
 
-/* 
-	* Custom printf wrapper for UART communication
-	* relies on internal buffer (char[128])
-*/
 int	ser_printf(UART_HandleTypeDef *huart, char *format, ...) {
 	int		len;
 	char	ser_buf[128]; 
@@ -18,17 +14,16 @@ int	ser_printf(UART_HandleTypeDef *huart, char *format, ...) {
 	return len;
 }
 
-int send_voltage(UART_HandleTypeDef *huart, volatile uint16_t *adc_raw_buffer) {
-	uint32_t	current_time;
-	uint16_t	raw;
-	float		voltage;
-	int			len;
+int send_csv(UART_HandleTypeDef *huart, signal_t signal) {
+	int len;
 
-	current_time = HAL_GetTick();
-	raw = adc_raw_buffer[0];
-	voltage = (raw / 4095.0f) * 3.3f;
-	len = ser_printf(huart, "%lu, %u, %.2f, 0, 0, 0\r\n", 
-	   current_time, raw, voltage);
+	len = ser_printf(huart, "%lu, %u, %u, %.2f, %.2f, %.2f\r\n", 
+		signal.current_time, 
+		signal.raw,
+		signal.raw_filtered,
+		signal.voltage, 
+		signal.resistance,
+		signal.temperature);
 	return len;
 }
 

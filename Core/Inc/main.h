@@ -31,7 +31,6 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-# include <stdio.h>
 # include <stdarg.h>
 /* USER CODE END Includes */
 
@@ -54,9 +53,6 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-// utils.c
-int	ser_printf(UART_HandleTypeDef *huart, char *format, ...);
-int send_voltage(UART_HandleTypeDef *huart, volatile uint16_t *adc_raw_buffer);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -64,6 +60,7 @@ int send_voltage(UART_HandleTypeDef *huart, volatile uint16_t *adc_raw_buffer);
 #define USER_LED_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
+#define EMA_ALPHA 0.01f
 
 /* USER CODE END Private defines */
 
