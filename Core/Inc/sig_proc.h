@@ -19,7 +19,7 @@
 typedef	struct {
 	uint32_t	current_time;
 	uint16_t	raw;
-	float		raw_filtered;
+	uint16_t	raw_filtered;
 	float		voltage;
 	float		resistance;
 	float		temperature;
@@ -47,7 +47,7 @@ void	EMA_init(ema_t *filter, float alpha);
  *
  *	In case of "unitialized" filter, set initialization flag and return raw.
  */
-float	EMA_update(ema_t *filter, uint16_t raw);
+uint16_t	EMA_update(ema_t *filter, uint16_t raw);
 
 /* 
 * Fills signal_t structure.

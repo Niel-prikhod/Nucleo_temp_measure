@@ -60,7 +60,7 @@ void Error_Handler(void);
 #define USER_LED_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
-#define EMA_ALPHA 0.1f
+#define EMA_ALPHA 0.01f
 
 /* USER CODE END Private defines */
 

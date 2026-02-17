@@ -17,7 +17,7 @@ int	ser_printf(UART_HandleTypeDef *huart, char *format, ...) {
 int send_csv(UART_HandleTypeDef *huart, signal_t signal) {
 	int len;
 
-	len = ser_printf(huart, "%lu, %u, %.2f, %.2f, %.2f, %.2f\r\n", 
+	len = ser_printf(huart, "%lu, %u, %u, %.2f, %.2f, %.2f\r\n", 
 		signal.current_time, 
 		signal.raw,
 		signal.raw_filtered,
